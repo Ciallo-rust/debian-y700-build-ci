@@ -148,7 +148,7 @@ jobs:
         run: |
           set -euo pipefail
           cat > "$RUNNER_TEMP/rootfs.env" <<'CONFIG_EOF'
-          DISTRO=resolute
+          DISTRO=stable
           ARCH=arm64
           ROOTFS_UUID=
           SDDM_AUTOLOGIN_SESSION=plasma
@@ -179,7 +179,7 @@ jobs:
           TB321FU_GPU_SENSOR_SOURCE_DIR=
           TB321FU_GPU_SENSOR_BUILD_JOBS=2
           INSTALL_GNOME_SNAPSHOT=1
-          INSTALL_FIREFOX=1
+          INSTALL_FIREFOX=0
           INSTALL_FCITX5_CHINESE=1
           DISABLE_SNAPD=1
           APPLY_Y700_FIRMWARE_FIXES=1
