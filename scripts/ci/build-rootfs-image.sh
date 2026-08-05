@@ -542,7 +542,7 @@ else
 deb $MIRROR $DISTRO main contrib non-free non-free-firmware
 deb $MIRROR $DISTRO-updates main contrib non-free non-free-firmware
 deb $MIRROR $DISTRO-backports main contrib non-free non-free-firmware
-deb $MIRROR $DISTRO-security main contrib non-free non-free-firmware
+
 APT
 fi
 
