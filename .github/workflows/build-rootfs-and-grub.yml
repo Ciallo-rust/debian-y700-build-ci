@@ -18,7 +18,7 @@ on:
         default: https://mirrors.ustc.edu.cn/debian/
         type: choice
         options:
-          - https://mirrors.ustc.edu.cn/debian/
+          - https://deb.debian.org/debian/
       debootstrap_variant:
         description: debootstrap 变体；default 表示不传 --variant，minbase 是更小基础系统，buildd 偏构建环境。
         required: true
