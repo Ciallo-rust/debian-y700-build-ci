@@ -15,9 +15,9 @@ Required host tools: debootstrap, mount, chroot, mkfs.ext4, e2fsck, tar.
 Environment inputs:
   OUTPUT_DIR                 default: out/ci-rootfs
   OUTPUT_PREFIX              default: <DISTRO>-<ARCH>
-  DISTRO                     default: noble
+  DISTRO                     default: stable
   ARCH                       default: arm64
-  MIRROR                     default: http://ports.ubuntu.com/ubuntu-ports
+  MIRROR                     default: http://deb.debian.org/debian
   DEBOOTSTRAP_VARIANT        default: minbase; set empty for debootstrap default
   RESOLV_CONF_CONTENT        optional /etc/resolv.conf contents for chroot
   APT_HTTP_PROXY             optional apt proxy used only during provisioning
@@ -25,11 +25,11 @@ Environment inputs:
   APT_SOURCES_LIST           optional full sources.list replacement
   ROOTFS_IMAGE_SIZE          default: 14G
   ROOTFS_UUID                optional ext4 UUID
-  ROOTFS_LABEL               default: Ubuntu
+  ROOTFS_LABEL               default: Debian
   ROOTFS_PARTLABEL           metadata only, default: userdata
-  HOSTNAME_NAME              default: y700
-  DEFAULT_USER_NAME          default: y700
-  DEFAULT_USER_PASSWORD      default: 1234
+  HOSTNAME_NAME              default: ciallo
+  DEFAULT_USER_NAME          default: ciallo
+  DEFAULT_USER_PASSWORD      default: 0
   ROOT_PASSWORD_MODE         locked|set|empty, default: locked
   ROOT_PASSWORD              used when ROOT_PASSWORD_MODE=set
   USER_SUDO_MODE             password|nopasswd|none, default: password
@@ -81,9 +81,9 @@ ci_require_cmd e2fsck
 ci_require_cmd rsync
 ci_require_cmd sha256sum
 
-DISTRO=${DISTRO:-noble}
+DISTRO=${DISTRO:-stable}
 ARCH=${ARCH:-arm64}
-MIRROR=${MIRROR:-http://ports.ubuntu.com/ubuntu-ports}
+MIRROR=${MIRROR:-https://mirrors.ustc.edu.cn/debian}
 DEBOOTSTRAP_VARIANT=${DEBOOTSTRAP_VARIANT-minbase}
 RESOLV_CONF_CONTENT=${RESOLV_CONF_CONTENT:-}
 APT_HTTP_PROXY=${APT_HTTP_PROXY:-${http_proxy:-${HTTP_PROXY:-}}}
@@ -93,9 +93,9 @@ OUTPUT_DIR=${OUTPUT_DIR:-out/ci-rootfs}
 ROOTFS_IMAGE_SIZE=${ROOTFS_IMAGE_SIZE:-14G}
 ROOTFS_LABEL=${ROOTFS_LABEL:-Ubuntu}
 ROOTFS_PARTLABEL=${ROOTFS_PARTLABEL:-userdata}
-HOSTNAME_NAME=${HOSTNAME_NAME:-y700}
-DEFAULT_USER_NAME=${DEFAULT_USER_NAME:-y700}
-DEFAULT_USER_PASSWORD=${DEFAULT_USER_PASSWORD:-1234}
+HOSTNAME_NAME=${HOSTNAME_NAME:-ciallo}
+DEFAULT_USER_NAME=${DEFAULT_USER_NAME:-ciallo}
+DEFAULT_USER_PASSWORD=${DEFAULT_USER_PASSWORD:-0}
 ROOT_PASSWORD_MODE=${ROOT_PASSWORD_MODE:-locked}
 ROOT_PASSWORD=${ROOT_PASSWORD:-}
 USER_SUDO_MODE=${USER_SUDO_MODE:-password}
@@ -110,10 +110,10 @@ APPLY_Y700_AUDIO_POLICY_FIXES=${APPLY_Y700_AUDIO_POLICY_FIXES:-1}
 BUILD_TB321FU_GPU_SENSOR=${BUILD_TB321FU_GPU_SENSOR:-1}
 TB321FU_GPU_SENSOR_SOURCE_DIR=${TB321FU_GPU_SENSOR_SOURCE_DIR:-}
 INSTALL_GNOME_SNAPSHOT=${INSTALL_GNOME_SNAPSHOT:-1}
-INSTALL_FIREFOX=${INSTALL_FIREFOX:-1}
+INSTALL_FIREFOX=${INSTALL_FIREFOX:-0}
 INSTALL_FCITX5_CHINESE=${INSTALL_FCITX5_CHINESE:-1}
 FCITX5_CHINESE_PACKAGES=${FCITX5_CHINESE_PACKAGES:-"fonts-noto-cjk im-config fcitx5 fcitx5-chinese-addons fcitx5-pinyin fcitx5-config-qt kde-config-fcitx5 fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 fcitx5-frontend-qt5 fcitx5-frontend-qt6 fcitx5-module-wayland fcitx5-module-xorg fcitx5-module-kimpanel fcitx5-module-emoji fcitx5-material-color"}
-DISABLE_SNAPD=${DISABLE_SNAPD:-1}
+DISABLE_SNAPD=${DISABLE_SNAPD:-0}
 COMPRESS=${COMPRESS:-7z}
 CHUNK_SIZE=${CHUNK_SIZE:-}
 KEEP_RAW_IMAGE=${KEEP_RAW_IMAGE:-0}
@@ -127,7 +127,7 @@ if ci_bool "$INSTALL_GNOME_SNAPSHOT"; then
   PACKAGE_LIST="$PACKAGE_LIST gnome-snapshot"
 fi
 if ci_bool "$INSTALL_FIREFOX"; then
-  PACKAGE_LIST="$PACKAGE_LIST firefox"
+  PACKAGE_LIST="$PACKAGE_LIST firefox-esr"
 fi
 if ci_bool "$INSTALL_FCITX5_CHINESE"; then
   PACKAGE_LIST="$PACKAGE_LIST $FCITX5_CHINESE_PACKAGES"
@@ -141,26 +141,26 @@ configure_mozilla_firefox_repo() {
   local keyring="$keyring_dir/packages.mozilla.org.asc"
   local key_tmp="$work_dir/packages.mozilla.org.asc"
 
-  ci_log "configuring Mozilla APT repository for non-snap Firefox"
-  install -d -m 0755 "$keyring_dir" "$source_dir" "$pref_dir"
-  ci_download "https://packages.mozilla.org/apt/repo-signing-key.gpg" "$key_tmp"
-  install -m 0644 "$key_tmp" "$keyring"
+#  ci_log "configuring Mozilla APT repository for non-snap Firefox"
+#  install -d -m 0755 "$keyring_dir" "$source_dir" "$pref_dir"
+#  ci_download "https://packages.mozilla.org/apt/repo-signing-key.gpg" "$key_tmp"
+#  install -m 0644 "$key_tmp" "$keyring"
 
-  cat > "$source_dir/mozilla.list" <<'MOZILLA_APT'
-deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main
-MOZILLA_APT
-  chmod 0644 "$source_dir/mozilla.list"
+#  cat > "$source_dir/mozilla.list" <<'MOZILLA_APT'
+#deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main
+#MOZILLA_APT
+#  chmod 0644 "$source_dir/mozilla.list"
+#
+#  cat > "$pref_dir/mozilla-firefox" <<'MOZILLA_PREF'
+#Package: firefox firefox-*
+#Pin: origin packages.mozilla.org
+#Pin-Priority: 1001
 
-  cat > "$pref_dir/mozilla-firefox" <<'MOZILLA_PREF'
-Package: firefox firefox-*
-Pin: origin packages.mozilla.org
-Pin-Priority: 1001
-
-Package: firefox
-Pin: version 1:*snap*
-Pin-Priority: -1
-MOZILLA_PREF
-  chmod 0644 "$pref_dir/mozilla-firefox"
+#Package: firefox
+#Pin: version 1:*snap*
+#Pin-Priority: -1
+#MOZILLA_PREF
+#  chmod 0644 "$pref_dir/mozilla-firefox"
 }
 
 include_deb_archive() {
@@ -539,10 +539,10 @@ if [ -n "${APT_SOURCES_LIST:-}" ]; then
   printf '%s\n' "$APT_SOURCES_LIST" > "$rootfs_dir/etc/apt/sources.list"
 else
   cat > "$rootfs_dir/etc/apt/sources.list" <<APT
-deb $MIRROR $DISTRO main restricted universe multiverse
-deb $MIRROR $DISTRO-updates main restricted universe multiverse
-deb $MIRROR $DISTRO-backports main restricted universe multiverse
-deb $MIRROR $DISTRO-security main restricted universe multiverse
+deb $MIRROR $DISTRO main contrib non-free non-free-firmware
+deb $MIRROR $DISTRO-updates main contrib non-free non-free-firmware
+deb $MIRROR $DISTRO-backports main contrib non-free non-free-firmware
+deb $MIRROR $DISTRO-security main contrib non-free non-free-firmware
 APT
 fi
 
@@ -609,13 +609,6 @@ fi
 apt-get update
 apt-get install -y $PACKAGE_LIST
 
-if ci_bool_chroot "$INSTALL_FIREFOX"; then
-  firefox_version=$(dpkg-query -W -f='${Version}' firefox 2>/dev/null || true)
-  [ -n "$firefox_version" ] || { echo 'firefox package was not installed' >&2; exit 1; }
-  case "$firefox_version" in
-    *snap*) echo "refusing snap transition Firefox package version: $firefox_version" >&2; exit 1 ;;
-  esac
-fi
 
 if ci_bool_chroot "$INSTALL_FCITX5_CHINESE"; then
   for pkg in fcitx5 fcitx5-chinese-addons fcitx5-pinyin im-config fonts-noto-cjk; do
