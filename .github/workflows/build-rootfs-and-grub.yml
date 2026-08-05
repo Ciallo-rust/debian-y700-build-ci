@@ -148,7 +148,7 @@ jobs:
         run: |
           set -euo pipefail
           cat > "$RUNNER_TEMP/rootfs.env" <<'CONFIG_EOF'
-          DISTRO=stable
+          DISTRO=testing
           ARCH=arm64
           ROOTFS_UUID=
           SDDM_AUTOLOGIN_SESSION=plasma
