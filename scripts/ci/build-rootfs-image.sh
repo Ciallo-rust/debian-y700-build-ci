@@ -81,7 +81,7 @@ ci_require_cmd e2fsck
 ci_require_cmd rsync
 ci_require_cmd sha256sum
 
-DISTRO=${DISTRO:-stable}
+DISTRO=${DISTRO:-testing}
 ARCH=${ARCH:-arm64}
 MIRROR=${MIRROR:-https://mirrors.ustc.edu.cn/debian}
 DEBOOTSTRAP_VARIANT=${DEBOOTSTRAP_VARIANT-minbase}
