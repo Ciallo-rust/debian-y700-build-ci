@@ -155,7 +155,7 @@ jobs:
           TZ_REGION=Asia/Shanghai
           LANG_NAME=zh_CN.UTF-8
           PACKAGE_LIST=
-          DESKTOP_ENV=kubuntu-desktop
+          DESKTOP_ENV=plasma-desktop
           OVERLAY_ARCHIVE=
           DEB_ARCHIVE=https://github.com/GUF296/ubuntu-y700-build-ci/releases/download/bootstrap-y700-20260625/y700-device-debs-20260624-201420-compat1.tar.gz
           BUILD_Y700_SENSOR_DEBS=1
