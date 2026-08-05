@@ -10,15 +10,15 @@ on:
       output_prefix:
         description: 输出文件名前缀；会用于 rootfs、grub 和 artifact 名称。
         required: true
-        default: y700-kubuntu2604-arm64
+        default: y700-debian13-arm64
         type: string
       ubuntu_mirror:
-        description: Ubuntu 软件源地址；arm64 设备应使用 ports.ubuntu.com/ubuntu-ports。
+        description: Debian 软件源地址。
         required: true
-        default: http://ports.ubuntu.com/ubuntu-ports
+        default: https://mirrors.ustc.edu.cn/debian/
         type: choice
         options:
-          - http://ports.ubuntu.com/ubuntu-ports
+          - https://mirrors.ustc.edu.cn/debian/
       debootstrap_variant:
         description: debootstrap 变体；default 表示不传 --variant，minbase 是更小基础系统，buildd 偏构建环境。
         required: true
@@ -36,7 +36,7 @@ on:
       rootfs_label:
         description: rootfs 文件系统卷标；只是 ext4 label，不决定刷入分区。
         required: true
-        default: Ubuntu
+        default: Debian
         type: string
       rootfs_partlabel:
         description: rootfs GPT 分区标签；当前 Y700 启动和刷机默认应保持 userdata，但可手填其它标签。
