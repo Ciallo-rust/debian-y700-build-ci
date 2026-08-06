@@ -161,7 +161,7 @@ fi
 #Pin-Priority: -1
 #MOZILLA_PREF
 #  chmod 0644 "$pref_dir/mozilla-firefox"
-}
+#}
 
 include_deb_archive() {
   local label=$1 src=$2
