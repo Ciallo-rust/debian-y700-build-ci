@@ -1,4 +1,8 @@
-# Ubuntu Y700 Build CI
+# Debian Y700 Gen3 Build CI
+
+根据上游@GUF296大佬的Ubuntu构建CI改的Debian构建CI。自用，技术力非常渣。boot.img直接使用上游release。snap禁用关闭，firefox安装关闭，以我能力改不了这两个就先关闭免得出问题。由于依赖问题，Debian选用forky\(testing\)而不是trixie。根据现有CI只能进gdm3，登录秒回gdm。通过qemu将boot.img中的Image作为内核，加载rootfs.img，在其中安装sddm，systemd-timesyncd，maliit-keyboard，firefox-esr后刷入，基础功能基本正常。
+
+# 上游readme
 
 GitHub Actions CI for building Lenovo Y700/TB321FU ARM64 rootfs and GRUB/FAT boot images.
 
