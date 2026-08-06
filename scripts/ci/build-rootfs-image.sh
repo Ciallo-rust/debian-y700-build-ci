@@ -27,9 +27,9 @@ Environment inputs:
   ROOTFS_UUID                optional ext4 UUID
   ROOTFS_LABEL               default: Debian
   ROOTFS_PARTLABEL           metadata only, default: userdata
-  HOSTNAME_NAME              default: ciallo
-  DEFAULT_USER_NAME          default: ciallo
-  DEFAULT_USER_PASSWORD      default: 0
+  HOSTNAME_NAME              default: y700
+  DEFAULT_USER_NAME          default: y700
+  DEFAULT_USER_PASSWORD      default: 1234
   ROOT_PASSWORD_MODE         locked|set|empty, default: locked
   ROOT_PASSWORD              used when ROOT_PASSWORD_MODE=set
   USER_SUDO_MODE             password|nopasswd|none, default: password
@@ -81,9 +81,9 @@ ci_require_cmd e2fsck
 ci_require_cmd rsync
 ci_require_cmd sha256sum
 
-DISTRO=${DISTRO:-testing}
+DISTRO=${DISTRO:-forky}
 ARCH=${ARCH:-arm64}
-MIRROR=${MIRROR:-https://mirrors.ustc.edu.cn/debian}
+MIRROR=${MIRROR:-https://deb.debian.org/debian}
 DEBOOTSTRAP_VARIANT=${DEBOOTSTRAP_VARIANT-minbase}
 RESOLV_CONF_CONTENT=${RESOLV_CONF_CONTENT:-}
 APT_HTTP_PROXY=${APT_HTTP_PROXY:-${http_proxy:-${HTTP_PROXY:-}}}
@@ -91,11 +91,11 @@ APT_HTTPS_PROXY=${APT_HTTPS_PROXY:-${https_proxy:-${HTTPS_PROXY:-${APT_HTTP_PROX
 OUTPUT_PREFIX=${OUTPUT_PREFIX:-${DISTRO}-${ARCH}}
 OUTPUT_DIR=${OUTPUT_DIR:-out/ci-rootfs}
 ROOTFS_IMAGE_SIZE=${ROOTFS_IMAGE_SIZE:-14G}
-ROOTFS_LABEL=${ROOTFS_LABEL:-Ubuntu}
+ROOTFS_LABEL=${ROOTFS_LABEL:-Debian}
 ROOTFS_PARTLABEL=${ROOTFS_PARTLABEL:-userdata}
-HOSTNAME_NAME=${HOSTNAME_NAME:-ciallo}
-DEFAULT_USER_NAME=${DEFAULT_USER_NAME:-ciallo}
-DEFAULT_USER_PASSWORD=${DEFAULT_USER_PASSWORD:-0}
+HOSTNAME_NAME=${HOSTNAME_NAME:-y700}
+DEFAULT_USER_NAME=${DEFAULT_USER_NAME:-y700}
+DEFAULT_USER_PASSWORD=${DEFAULT_USER_PASSWORD:-1234}
 ROOT_PASSWORD_MODE=${ROOT_PASSWORD_MODE:-locked}
 ROOT_PASSWORD=${ROOT_PASSWORD:-}
 USER_SUDO_MODE=${USER_SUDO_MODE:-password}
@@ -110,7 +110,7 @@ APPLY_Y700_AUDIO_POLICY_FIXES=${APPLY_Y700_AUDIO_POLICY_FIXES:-1}
 BUILD_TB321FU_GPU_SENSOR=${BUILD_TB321FU_GPU_SENSOR:-1}
 TB321FU_GPU_SENSOR_SOURCE_DIR=${TB321FU_GPU_SENSOR_SOURCE_DIR:-}
 INSTALL_GNOME_SNAPSHOT=${INSTALL_GNOME_SNAPSHOT:-1}
-INSTALL_FIREFOX=${INSTALL_FIREFOX:-0}
+INSTALL_FIREFOX=${INSTALL_FIREFOX:-1}
 INSTALL_FCITX5_CHINESE=${INSTALL_FCITX5_CHINESE:-1}
 FCITX5_CHINESE_PACKAGES=${FCITX5_CHINESE_PACKAGES:-"fonts-noto-cjk im-config fcitx5 fcitx5-chinese-addons fcitx5-pinyin fcitx5-config-qt kde-config-fcitx5 fcitx5-frontend-gtk2 fcitx5-frontend-gtk3 fcitx5-frontend-gtk4 fcitx5-frontend-qt5 fcitx5-frontend-qt6 fcitx5-module-wayland fcitx5-module-xorg fcitx5-module-kimpanel fcitx5-module-emoji fcitx5-material-color"}
 DISABLE_SNAPD=${DISABLE_SNAPD:-0}
@@ -118,7 +118,7 @@ COMPRESS=${COMPRESS:-7z}
 CHUNK_SIZE=${CHUNK_SIZE:-}
 KEEP_RAW_IMAGE=${KEEP_RAW_IMAGE:-0}
 
-default_packages="systemd systemd-sysv dbus sudo locales tzdata ca-certificates gnupg curl wget network-manager openssh-server nano vim rsync kmod initramfs-tools"
+default_packages="systemd systemd-sysv dbus sudo locales tzdata ca-certificates gnupg curl wget network-manager openssh-server nano vim rsync kmod initramfs-tools sddm systemd-timesyncd maliit-keyboard"
 PACKAGE_LIST=${PACKAGE_LIST:-$default_packages}
 if [ -n "${DESKTOP_ENV:-}" ]; then
   PACKAGE_LIST="$PACKAGE_LIST $DESKTOP_ENV"
@@ -133,13 +133,13 @@ if ci_bool "$INSTALL_FCITX5_CHINESE"; then
   PACKAGE_LIST="$PACKAGE_LIST $FCITX5_CHINESE_PACKAGES"
 fi
 
-configure_mozilla_firefox_repo() {
-  local root=$1
-  local keyring_dir="$root/etc/apt/keyrings"
-  local source_dir="$root/etc/apt/sources.list.d"
-  local pref_dir="$root/etc/apt/preferences.d"
-  local keyring="$keyring_dir/packages.mozilla.org.asc"
-  local key_tmp="$work_dir/packages.mozilla.org.asc"
+#configure_mozilla_firefox_repo() {
+#  local root=$1
+#  local keyring_dir="$root/etc/apt/keyrings"
+#  local source_dir="$root/etc/apt/sources.list.d"
+#  local pref_dir="$root/etc/apt/preferences.d"
+#  local keyring="$keyring_dir/packages.mozilla.org.asc"
+#  local key_tmp="$work_dir/packages.mozilla.org.asc"
 
 #  ci_log "configuring Mozilla APT repository for non-snap Firefox"
 #  install -d -m 0755 "$keyring_dir" "$source_dir" "$pref_dir"
@@ -626,10 +626,7 @@ if ci_bool_chroot "$INSTALL_FCITX5_CHINESE"; then
     /etc/skel/.config/plasma-workspace/env
 
   cat > /etc/environment.d/90-fcitx5.conf <<'FCITX5_ENV'
-GTK_IM_MODULE=fcitx
-QT_IM_MODULE=fcitx
 XMODIFIERS=@im=fcitx
-SDL_IM_MODULE=fcitx
 INPUT_METHOD=fcitx
 FCITX5_ENV
   chmod 0644 /etc/environment.d/90-fcitx5.conf
@@ -637,10 +634,7 @@ FCITX5_ENV
 
   cat > /etc/skel/.config/plasma-workspace/env/fcitx5.sh <<'FCITX5_PLASMA_ENV'
 #!/bin/sh
-export GTK_IM_MODULE=fcitx
-export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx
-export SDL_IM_MODULE=fcitx
 export INPUT_METHOD=fcitx
 FCITX5_PLASMA_ENV
   chmod 0755 /etc/skel/.config/plasma-workspace/env/fcitx5.sh

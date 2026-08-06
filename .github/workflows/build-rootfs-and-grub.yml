@@ -10,12 +10,12 @@ on:
       output_prefix:
         description: 输出文件名前缀；会用于 rootfs、grub 和 artifact 名称。
         required: true
-        default: y700-debian13-arm64
+        default: y700-debian-arm64
         type: string
       ubuntu_mirror:
         description: Debian 软件源地址。
         required: true
-        default: https://mirrors.ustc.edu.cn/debian/
+        default: https://deb.debian.org/debian/
         type: choice
         options:
           - https://deb.debian.org/debian/
@@ -80,12 +80,7 @@ on:
         options:
           - password
           - nopasswd
-          - none
-      sddm_autologin:
-        description: 是否启用 SDDM 自动登录；关闭时启动到登录界面，可切换用户。
-        required: true
-        default: false
-        type: boolean
+          # - none
       boot_image_size:
         description: GRUB/FAT 启动镜像大小；可手填如 256M、512M、1G，使用现有 verified boot template 时默认 256M 足够。
         required: true
@@ -148,7 +143,7 @@ jobs:
         run: |
           set -euo pipefail
           cat > "$RUNNER_TEMP/rootfs.env" <<'CONFIG_EOF'
-          DISTRO=testing
+          DISTRO=forky
           ARCH=arm64
           ROOTFS_UUID=
           SDDM_AUTOLOGIN_SESSION=plasma
